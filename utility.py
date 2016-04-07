@@ -113,6 +113,17 @@ def GenerateSubgraphUIC(G,p):
             g.remove_edge(edge[0],edge[1])
     return g
 
+# To generate a subgraph based on source graph @G with a probability p(u,v)=1/dv
+# dv is the indegree of node v
+# WIC means it is a weighted independent cascade (WIC)
+def GenerateSubgraphWIC(G):
+    g = G.copy()
+    indegree_dict = g.in_degree()
+    for edge in g.edges():
+        flip = random.random()
+        if flip > float(1/indegree_dict[edge[1]]):
+            g.remove_edge(edge[0],edge[1])
+    return g
 
 if __name__ == '__main__':
     # file_name = 'data/simpleGraph1'
@@ -136,7 +147,8 @@ if __name__ == '__main__':
     # print DG.neighbors('1')
     p = 0.01
     start = time.clock()
-    g = GenerateSubgraphUIC(DG,p)
+    # g = GenerateSubgraphUIC(DG,p)
+    g = GenerateSubgraphWIC(DG)
     stop = time.clock()
     time_cost = float(stop-start)
     print 'DG has %i edges, g has %i edges' % (DG.number_of_edges(),g.number_of_edges())
