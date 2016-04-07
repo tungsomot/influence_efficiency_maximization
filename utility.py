@@ -1,7 +1,8 @@
 #coidng = utf-8
 import networkx as nx
 import numpy as np
-import timeit
+import time
+from collections import deque
 
 # Load an unweighted graph file @file_name.
 # return a directed graph @DG
@@ -80,41 +81,46 @@ def Estimation(G,S):
         influenced_dict[node] = False
         dist_dict[node] = np.inf
     # Add seed set @S
+    seed_deque = deque([])
     for seed in S:
         dist_dict[seed] = 1
+        seed_deque.append(seed)
     # @flag represents the iteration is still going on
-    flag = True
+    # flag = True
     # Influence cascades
-    while flag:
-        flag = False
-        for u in G.nodes():
-            if not influenced_dict[u] and dist_dict[u] < np.inf:
-                flag = True
-                influenced_dict[u] = True
-                for v in G.neighbors(u):
-                    update_distance = dist_dict[u]+float(G.edge[u][v]['weight'])
-                    if not influenced_dict[v] and update_distance < dist_dict[v]:
-                        dist_dict[v] = update_distance
+    while len(seed_deque)>0:
+        # popleft of the seed_deque, the node has minimum distance value
+        node = seed_deque.popleft()
+        influenced_dict[node] = True
+        for v in G.neighbors(node):
+            update_distance = dist_dict[node]+float(G.edge[node][v]['weight'])
+            if not influenced_dict[v] and update_distance<dist_dict[v]:
+                dist_dict[v] = update_distance
+                seed_deque.append(v)
     influence_efficiency = float(0)
     for k in dist_dict:
         influence_efficiency += 1/dist_dict[k]
     return influence_efficiency
 
+
+
 if __name__ == '__main__':
     # file_name = 'data/simpleGraph1'
     file_name = 'data/cit-HepPh.txt'
-    start = timeit.default_timer()
-    print start
+    start = time.clock()
+    # print start
     DG = LoadUnweightedGraph(file_name)
+    # S = ['5']
     S = ['1113','3323','8273','2171','8298']
     inf_eff = Estimation(DG,S)
     print 'The influence_efficiency using seed set %s is %f.' % (S,inf_eff)
     # sp = Dijkstra(DG,'3033')
     # for k,v in sp.iteritems():
     #     print '%s: %f' % (k,v)
-    stop = timeit.default_timer()
-    print stop
-    print stop - start
+    stop = time.clock()
+    # print stop
+    time_cost = float(stop-start)
+    print 'Estimation cost: %f' % time_cost
     # print DG.edge['0']['1']['weight']
     # print DG.nodes()
     # print DG.neighbors('1')
