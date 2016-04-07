@@ -2,6 +2,7 @@
 import networkx as nx
 import numpy as np
 import time
+import random
 from collections import deque
 
 # Load an unweighted graph file @file_name.
@@ -102,6 +103,15 @@ def Estimation(G,S):
         influence_efficiency += 1/dist_dict[k]
     return influence_efficiency
 
+# To generate a subgraph based on source graph @G with a probability @p
+# UIC means it is a uniform independent cascade (UIC)
+def GenerateSubgraphUIC(G,p):
+    g = G.copy()
+    for edge in g.edges():
+        flip = random.random()
+        if flip > p:
+            g.remove_edge(edge[0],edge[1])
+    return g
 
 
 if __name__ == '__main__':
@@ -124,3 +134,10 @@ if __name__ == '__main__':
     # print DG.edge['0']['1']['weight']
     # print DG.nodes()
     # print DG.neighbors('1')
+    p = 0.01
+    start = time.clock()
+    g = GenerateSubgraphUIC(DG,p)
+    stop = time.clock()
+    time_cost = float(stop-start)
+    print 'DG has %i edges, g has %i edges' % (DG.number_of_edges(),g.number_of_edges())
+    print 'Estimation cost: %f' % time_cost
