@@ -125,6 +125,37 @@ def GenerateSubgraphWIC(G):
             g.remove_edge(edge[0],edge[1])
     return g
 
+# To generate a RR set, which is used for Reverse Influence Sampling (RIS) method
+# @g is a subgraph of @G
+#
+def GenerateRRSet(g):
+    # To represents whether node is searched
+    searched_dict = {}
+    # To record the efficiency of nodes to a certain node @v.
+    # If there is no path from @u to @v, the efficiency of @u is zero.
+    dist_dict = {}
+    # To initilize all the nodes
+    for node in g.nodes():
+        searched_dict[node] = False
+        dist_dict[node] = np.inf
+    # To select a node @v uniformly
+    n = len(g.nodes())
+    v = str(int(random.random()*n))
+    # Seed set of @v which is used for RIS
+    seed_deque = deque([v])
+    dist_dict[v] = 1
+    while len(seed_deque)>0:
+        node = seed_deque.popleft()
+        searched_dict[node] = True
+        for in_edge in g.in_edges(node):
+            u = in_edge[0]
+            update_distance = dist_dict[node] + float(g.edge[u][node]['weight'])
+            if not searched_dict[u] and update_distance<dist_dict[u]:
+                dist_dict[u] = update_distance
+                seed_deque.append(u)
+    return dist_dict
+
+
 if __name__ == '__main__':
     # file_name = 'data/simpleGraph1'
     file_name = 'data/cit-HepPh.txt'
@@ -153,3 +184,9 @@ if __name__ == '__main__':
     time_cost = float(stop-start)
     print 'DG has %i edges, g has %i edges' % (DG.number_of_edges(),g.number_of_edges())
     print 'Estimation cost: %f' % time_cost
+
+    start = time.clock()
+    dist_dict = GenerateRRSet(g)
+    stop = time.clock()
+    time_cost = float(stop-start)
+    print dist_dict
