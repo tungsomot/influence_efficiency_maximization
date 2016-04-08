@@ -141,18 +141,23 @@ def GenerateRRSet(g):
     # To select a node @v uniformly
     n = len(g.nodes())
     v = str(int(random.random()*n))
+    # To get the indegree @indegree_dict
+    indegree_dict = g.in_degree()
     # Seed set of @v which is used for RIS
     seed_deque = deque([v])
-    dist_dict[v] = 1
+    dist_dict[v] = 1.0
+    # print g.in_edges(v)
     while len(seed_deque)>0:
         node = seed_deque.popleft()
         searched_dict[node] = True
         for in_edge in g.in_edges(node):
-            u = in_edge[0]
-            update_distance = dist_dict[node] + float(g.edge[u][node]['weight'])
-            if not searched_dict[u] and update_distance<dist_dict[u]:
-                dist_dict[u] = update_distance
-                seed_deque.append(u)
+            flip = random.random()
+            if flip < float(1/indegree_dict[node]):
+                u = in_edge[0]
+                update_distance = dist_dict[node] + float(g.edge[u][node]['weight'])
+                if not searched_dict[u] and update_distance<dist_dict[u]:
+                    dist_dict[u] = update_distance
+                    seed_deque.append(u)
     return dist_dict
 
 
@@ -176,17 +181,24 @@ if __name__ == '__main__':
     # print DG.edge['0']['1']['weight']
     # print DG.nodes()
     # print DG.neighbors('1')
-    p = 0.01
-    start = time.clock()
-    # g = GenerateSubgraphUIC(DG,p)
-    g = GenerateSubgraphWIC(DG)
-    stop = time.clock()
-    time_cost = float(stop-start)
-    print 'DG has %i edges, g has %i edges' % (DG.number_of_edges(),g.number_of_edges())
-    print 'Estimation cost: %f' % time_cost
+    # p = 0.01
 
-    start = time.clock()
-    dist_dict = GenerateRRSet(g)
-    stop = time.clock()
-    time_cost = float(stop-start)
-    print dist_dict
+    # start = time.clock()
+    # # g = GenerateSubgraphUIC(DG,p)
+    # g = GenerateSubgraphWIC(DG)
+    # stop = time.clock()
+    # time_cost = float(stop-start)
+    # print 'DG has %i edges, g has %i edges' % (DG.number_of_edges(),g.number_of_edges())
+    # # print 'g edges: %s' % g.edges()
+    # print 'GenerateSubgraph cost: %f' % time_cost
+
+    for i in xrange(100):
+        start = time.clock()
+        dist_dict = GenerateRRSet(DG)
+        stop = time.clock()
+        time_cost = float(stop-start)
+        # print dist_dict
+        for k in dist_dict.keys():
+            if dist_dict[k]!=np.inf:
+                print dist_dict[k]
+        print 'GenerateRRSet cost: %f' % time_cost
