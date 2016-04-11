@@ -126,8 +126,9 @@ def GenerateSubgraphWIC(G):
     return g
 
 # To generate a RR set, which is used for Reverse Influence Sampling (RIS) method
+# This method uses WIC model.
 # @g is a subgraph of @G
-#
+# return random node @v and corresponding distance dictory @dist_dict
 def GenerateRRSet(g):
     # To represents whether node is searched
     searched_dict = {}
@@ -158,8 +159,10 @@ def GenerateRRSet(g):
                 if not searched_dict[u] and update_distance<dist_dict[u]:
                     dist_dict[u] = update_distance
                     seed_deque.append(u)
-    return dist_dict
+    return v,dist_dict
 
+def RIS(arg):
+    pass
 
 if __name__ == '__main__':
     # file_name = 'data/simpleGraph1'
@@ -194,7 +197,7 @@ if __name__ == '__main__':
 
     for i in xrange(100):
         start = time.clock()
-        dist_dict = GenerateRRSet(DG)
+        v,dist_dict = GenerateRRSet(DG)
         stop = time.clock()
         time_cost = float(stop-start)
         # print dist_dict
