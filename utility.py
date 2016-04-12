@@ -135,7 +135,7 @@ def GenerateRRSet(g):
     # To record the efficiency of nodes to a certain node @v.
     # If there is no path from @u to @v, the efficiency of @u is zero.
     dist_dict = {}
-    # To initilize all the nodes
+    # To initialize all the nodes
     for node in g.nodes():
         searched_dict[node] = False
         dist_dict[node] = np.inf
@@ -159,10 +159,38 @@ def GenerateRRSet(g):
                 if not searched_dict[u] and update_distance<dist_dict[u]:
                     dist_dict[u] = update_distance
                     seed_deque.append(u)
-    return v,dist_dict
+    return dist_dict
 
-def RIS(arg):
-    pass
+# Reverse efficiency sampling (RES) algorithm:
+# A greedy algorithm based on RR sets
+# @rr_sets is the simulations of return of function @GenerateRRSet
+# @G is the original graph
+# @S is the seed set
+# @k is the number of @S
+def RES(rr_sets,k,G):
+    # Initialize seed set @S
+    S = {}
+    # To find @S
+    for i in xrange(k):
+        # Clear efficiency dictory
+        eff_dict = {}
+        for node in G.nodes():  eff_dict[node] = 0
+        # To calculate the most efficient node
+        for rr_set in rr_sets:
+            for node in G.nodes():
+                eff_dict[node] += float(1.0/rr_set[node])
+        max_efficiency = 0
+        max_node = '-1'
+        for key in eff_dict.keys():
+            if eff_dict[key]>max_efficiency:
+                max_efficiency = eff_dict[key]
+                max_node = key
+        # update @rr_sets
+        for rr_set in rr_sets:
+            if rr_set[max_node]!=np.inf:
+                rr_sets.remove(rr_set)
+        S.append(max_node)
+    return S
 
 if __name__ == '__main__':
     # file_name = 'data/simpleGraph1'
@@ -197,7 +225,7 @@ if __name__ == '__main__':
 
     for i in xrange(100):
         start = time.clock()
-        v,dist_dict = GenerateRRSet(DG)
+        dist_dict = GenerateRRSet(DG)
         stop = time.clock()
         time_cost = float(stop-start)
         # print dist_dict
