@@ -3,6 +3,7 @@ import networkx as nx
 import numpy as np
 import time
 import random
+import math
 from collections import deque
 
 # Load an unweighted graph file @file_name.
@@ -169,7 +170,7 @@ def GenerateRRSet(g):
 # @k is the number of @S
 def RES(rr_sets,k,G):
     # Initialize seed set @S
-    S = {}
+    S = []
     # To find @S
     for i in xrange(k):
         # Clear efficiency dictory
@@ -194,42 +195,55 @@ def RES(rr_sets,k,G):
 
 if __name__ == '__main__':
     # file_name = 'data/simpleGraph1'
-    file_name = 'data/cit-HepPh.txt'
-    start = time.clock()
-    # print start
-    DG = LoadUnweightedGraph(file_name)
-    # S = ['5']
-    S = ['1113','3323','8273','2171','8298']
-    inf_eff = Estimation(DG,S)
-    print 'The influence_efficiency using seed set %s is %f.' % (S,inf_eff)
-    # sp = Dijkstra(DG,'3033')
-    # for k,v in sp.iteritems():
-    #     print '%s: %f' % (k,v)
-    stop = time.clock()
-    # print stop
-    time_cost = float(stop-start)
-    print 'Estimation cost: %f' % time_cost
-    # print DG.edge['0']['1']['weight']
-    # print DG.nodes()
-    # print DG.neighbors('1')
-    # p = 0.01
-
+    # file_name = 'data/cit-HepPh.txt'
     # start = time.clock()
-    # # g = GenerateSubgraphUIC(DG,p)
-    # g = GenerateSubgraphWIC(DG)
+    # # print start
+    # DG = LoadUnweightedGraph(file_name)
+    # # S = ['5']
+    # S = ['1113','3323','8273','2171','8298']
+    # inf_eff = Estimation(DG,S)
+    # print 'The influence_efficiency using seed set %s is %f.' % (S,inf_eff)
+    # # sp = Dijkstra(DG,'3033')
+    # # for k,v in sp.iteritems():
+    # #     print '%s: %f' % (k,v)
     # stop = time.clock()
+    # # print stop
     # time_cost = float(stop-start)
-    # print 'DG has %i edges, g has %i edges' % (DG.number_of_edges(),g.number_of_edges())
-    # # print 'g edges: %s' % g.edges()
-    # print 'GenerateSubgraph cost: %f' % time_cost
+    # print 'Estimation cost: %f' % time_cost
+    # # print DG.edge['0']['1']['weight']
+    # # print DG.nodes()
+    # # print DG.neighbors('1')
+    # # p = 0.01
+    #
+    # # start = time.clock()
+    # # # g = GenerateSubgraphUIC(DG,p)
+    # # g = GenerateSubgraphWIC(DG)
+    # # stop = time.clock()
+    # # time_cost = float(stop-start)
+    # # print 'DG has %i edges, g has %i edges' % (DG.number_of_edges(),g.number_of_edges())
+    # # # print 'g edges: %s' % g.edges()
+    # # print 'GenerateSubgraph cost: %f' % time_cost
+    #
+    # for i in xrange(100):
+    #     start = time.clock()
+    #     dist_dict = GenerateRRSet(DG)
+    #     stop = time.clock()
+    #     time_cost = float(stop-start)
+    #     # print dist_dict
+    #     for k in dist_dict.keys():
+    #         if dist_dict[k]!=np.inf:
+    #             print dist_dict[k]
+    #     print 'GenerateRRSet cost: %f' % time_cost
 
-    for i in xrange(100):
-        start = time.clock()
-        dist_dict = GenerateRRSet(DG)
-        stop = time.clock()
-        time_cost = float(stop-start)
-        # print dist_dict
-        for k in dist_dict.keys():
-            if dist_dict[k]!=np.inf:
-                print dist_dict[k]
-        print 'GenerateRRSet cost: %f' % time_cost
+    # test simpleGraph1
+    file_name_simple = 'data/simpleGraph2'
+    simpleG = LoadUnweightedGraph(file_name_simple)
+    n = simpleG.number_of_nodes()
+    r = int(n*math.log(n))
+    rr_sets = []
+    for i in xrange(r):
+        rr_set = GenerateRRSet(simpleG)
+        rr_sets.append(rr_set)
+    k = 1
+    S = RES(rr_sets,k,simpleG)
+    print S
