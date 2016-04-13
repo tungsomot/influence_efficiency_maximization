@@ -14,7 +14,7 @@ def LoadUnweightedGraph(file_name):
         with open(file_name,'r') as graph_file:
             for line in graph_file:
                 # An edge from @u to @v with weight @w
-                v,u = line.split()
+                u,v = line.split()
                 DG.add_edge(u,v,weight=1)
     except Exception as e:
         raise
@@ -193,6 +193,38 @@ def RES(rr_sets,k,G):
         S.append(max_node)
     return S
 
+def greedy(G,k,r):
+    """
+    :type @G: networkx.DiGraph
+    :type @k: int
+    :type @r: int
+    """
+    # Generate subgraphs
+    subgraphs = []
+    for i in xrange(r):
+        subgraphs.append(GenerateSubgraphWIC(G))
+    # Initialize @S
+    S = []
+    # dist_dict = {}
+    # for v in G.nodes():
+    #     dist_dict[v] = np.inf
+    for i in xrange(k):
+        max_eff = float(0)
+        max_node = '-1'
+        for node in G.nodes():
+            if node not in S:
+                eff_sum = float(0)
+                # dist_dict_tmp = {}
+                # for v in G.nodes():
+                #     dist_dict_tmp[v] = np.inf
+                for subgraph in subgraphs:
+                    eff_sum += Estimation(subgraph,S+[node])
+                if eff_sum > max_eff:
+                    max_eff = eff_sum
+                    max_node = node
+        S.append(max_node)
+    return S
+
 if __name__ == '__main__':
     # file_name = 'data/simpleGraph1'
     # file_name = 'data/cit-HepPh.txt'
@@ -236,14 +268,24 @@ if __name__ == '__main__':
     #     print 'GenerateRRSet cost: %f' % time_cost
 
     # test simpleGraph1
+    # file_name_simple = 'data/simpleGraph2'
+    # simpleG = LoadUnweightedGraph(file_name_simple)
+    # n = simpleG.number_of_nodes()
+    # r = int(n*math.log(n))
+    # rr_sets = []
+    # for i in xrange(r):
+    #     rr_set = GenerateRRSet(simpleG)
+    #     rr_sets.append(rr_set)
+    # k = 1
+    # S = RES(rr_sets,k,simpleG)
+    # print S
+
+    # test greedy algorithm
     file_name_simple = 'data/simpleGraph2'
     simpleG = LoadUnweightedGraph(file_name_simple)
+    # print simpleG.edges()
     n = simpleG.number_of_nodes()
     r = int(n*math.log(n))
-    rr_sets = []
-    for i in xrange(r):
-        rr_set = GenerateRRSet(simpleG)
-        rr_sets.append(rr_set)
     k = 1
-    S = RES(rr_sets,k,simpleG)
+    S = greedy(simpleG,k,r)
     print S
