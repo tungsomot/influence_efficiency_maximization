@@ -130,19 +130,20 @@ def GenerateSubgraphWIC(G):
 # This method uses WIC model.
 # @g is a subgraph of @G
 # return random node @v and corresponding distance dictory @dist_dict
+# Only record the node from which is reachable
 def GenerateRRSet(g):
     # To represents whether node is searched
     searched_dict = {}
-    # To record the efficiency of nodes to a certain node @v.
-    # If there is no path from @u to @v, the efficiency of @u is zero.
+    # To record the distance of nodes to a certain node @v.
     dist_dict = {}
     # To initialize all the nodes
     for node in g.nodes():
         searched_dict[node] = False
-        dist_dict[node] = np.inf
+        # dist_dict[node] = np.inf
     # To select a node @v uniformly
     n = len(g.nodes())
     v = str(int(random.random()*n))
+    # print v
     # To get the indegree @indegree_dict
     indegree_dict = g.in_degree()
     # Seed set of @v which is used for RIS
@@ -157,9 +158,10 @@ def GenerateRRSet(g):
             if flip < float(1/indegree_dict[node]):
                 u = in_edge[0]
                 update_distance = dist_dict[node] + float(g.edge[u][node]['weight'])
-                if not searched_dict[u] and update_distance<dist_dict[u]:
-                    dist_dict[u] = update_distance
-                    seed_deque.append(u)
+                if not searched_dict[u]:
+                    if dist_dict.has_key(u) and update_distance<dist_dict[u] or not dist_dict.has_key(u):
+                        dist_dict[u] = update_distance
+                        seed_deque.append(u)
     return dist_dict
 
 # Reverse efficiency sampling (RES) algorithm:
@@ -284,8 +286,11 @@ if __name__ == '__main__':
     file_name_simple = 'data/simpleGraph2'
     simpleG = LoadUnweightedGraph(file_name_simple)
     # print simpleG.edges()
-    n = simpleG.number_of_nodes()
-    r = int(n*math.log(n))
-    k = 1
-    S = greedy(simpleG,k,r)
-    print S
+    # n = simpleG.number_of_nodes()
+    # r = int(n*math.log(n))
+    # k = 1
+    # S = greedy(simpleG,k,r)
+    # print S
+    for i in xrange(100):
+        rr_set = GenerateRRSet(simpleG)
+        print rr_set
