@@ -222,6 +222,8 @@ def RES(G,k,r):
                 if rr_sets[j][u]<min_distance:
                     min_distance = rr_sets[j][u]
                     min_distance_node = u
+            # remove the rr_set if max_node is already in @S
+            # this will reduce time-comsuming
             if min_distance_node == max_node:
                 rr_sets.remove(rr_sets[j])
                 r -= 1
