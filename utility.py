@@ -155,7 +155,7 @@ def GenerateRRSet(g):
         searched_dict[node] = True
         for in_edge in g.in_edges(node):
             flip = random.random()
-            if flip < float(1/indegree_dict[node]):
+            if flip < float(1.0/indegree_dict[node]):
                 u = in_edge[0]
                 update_distance = dist_dict[node] + float(g.edge[u][node]['weight'])
                 if not searched_dict[u]:
@@ -189,7 +189,7 @@ def RES(G,k,r):
         # It is the sampling node's index
         # Set the distance to node i infinite
         dist_dict[i] = np.inf
-    # print rr_sets
+    print rr_sets
     # To find @S
     for i in xrange(k):
         eff = {}
@@ -325,5 +325,5 @@ if __name__ == '__main__':
     r = int(n*math.log(n))
     # r = 10000
     k = 1
-    S = greedy(simpleG,k,r)
+    S = RES(simpleG,k,r)
     print S
