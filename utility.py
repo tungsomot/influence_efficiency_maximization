@@ -122,7 +122,7 @@ def GenerateSubgraphWIC(G):
     indegree_dict = g.in_degree()
     for edge in g.edges():
         flip = random.random()
-        if flip > float(1/indegree_dict[edge[1]]):
+        if flip > float(1.0/indegree_dict[edge[1]]):
             g.remove_edge(edge[0],edge[1])
     return g
 
@@ -324,6 +324,6 @@ if __name__ == '__main__':
     n = simpleG.number_of_nodes()
     r = int(n*math.log(n))
     # r = 10000
-    k = 2
-    S = RES(simpleG,k,r)
+    k = 1
+    S = greedy(simpleG,k,r)
     print S
