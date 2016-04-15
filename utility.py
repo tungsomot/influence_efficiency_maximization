@@ -166,33 +166,66 @@ def GenerateRRSet(g):
 
 # Reverse efficiency sampling (RES) algorithm:
 # A greedy algorithm based on RR sets
-# @rr_sets is the simulations of return of function @GenerateRRSet
 # @G is the original graph
-# @S is the seed set
 # @k is the number of @S
-def RES(rr_sets,k,G):
+# @r is the number of simulations of return of function @GenerateRRSet
+# @S is the seed set
+def RES(G,k,r):
+    """
+    :type @G: networkx.DiGraph
+    :type @k: int
+    :type @r: int
+    """
     # Initialize seed set @S
     S = []
+    # dist_dict represents the minimum distance from @S to node i
+    dist_dict = {}
+    # To generate rr_sets
+    rr_sets = []
+    for i in xrange(r):
+        rr_sets.append(GenerateRRSet(G))
+        # Attention! Indices here is from 0 to len(rr_sets)-1
+        # It is different from the node index (e.g. '267') in the graph G
+        # It is the sampling node's index
+        # Set the distance to node i infinite
+        dist_dict[i] = np.inf
+    # print rr_sets
     # To find @S
     for i in xrange(k):
-        # Clear efficiency dictory
-        eff_dict = {}
-        for node in G.nodes():  eff_dict[node] = 0
-        # To calculate the most efficient node
-        for rr_set in rr_sets:
-            for node in G.nodes():
-                eff_dict[node] += float(1.0/rr_set[node])
-        max_efficiency = 0
+        eff = {}
+        for j in xrange(r):
+            for u in rr_sets[j].keys():
+                if rr_sets[j][u]<dist_dict[j]:
+                    if eff.has_key(u):
+                        eff[u] += float(1.0/rr_sets[j][u] - 1.0/dist_dict[j])
+                    else:
+                        eff[u] = float(1.0/rr_sets[j][u] - 1.0/dist_dict[j])
+        # To calculate the max efficient node in ith iteration
+        # print eff
+        max_eff = 0
         max_node = '-1'
-        for key in eff_dict.keys():
-            if eff_dict[key]>max_efficiency:
-                max_efficiency = eff_dict[key]
-                max_node = key
-        # update @rr_sets
-        for rr_set in rr_sets:
-            if rr_set[max_node]!=np.inf:
-                rr_sets.remove(rr_set)
+        for u in eff.keys():
+            if eff[u]>max_eff:
+                max_node = u
+                max_eff = eff[u]
+        # Add max_node to @S
         S.append(max_node)
+        # print S
+        # Update @dist_dict and @rr_sets
+        j = 0
+        while j < r:
+            if rr_sets[j].has_key(max_node):
+                dist_dict[j] = rr_sets[j][max_node]
+            min_distance = dist_dict[j]
+            min_distance_node = max_node
+            for u in rr_sets[j].keys():
+                if rr_sets[j][u]<min_distance:
+                    min_distance = rr_sets[j][u]
+                    min_distance_node = u
+            if min_distance_node == max_node:
+                rr_sets.remove(rr_sets[j])
+                r -= 1
+            j += 1
     return S
 
 def greedy(G,k,r):
@@ -285,12 +318,10 @@ if __name__ == '__main__':
     # test greedy algorithm
     file_name_simple = 'data/simpleGraph2'
     simpleG = LoadUnweightedGraph(file_name_simple)
-    # print simpleG.edges()
-    # n = simpleG.number_of_nodes()
-    # r = int(n*math.log(n))
-    # k = 1
-    # S = greedy(simpleG,k,r)
-    # print S
-    for i in xrange(100):
-        rr_set = GenerateRRSet(simpleG)
-        print rr_set
+    print simpleG.edges()
+    n = simpleG.number_of_nodes()
+    r = int(n*math.log(n))
+    # r = 10000
+    k = 2
+    S = RES(simpleG,k,r)
+    print S
