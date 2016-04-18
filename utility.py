@@ -156,9 +156,9 @@ def GenerateRRSet(g):
         for in_edge in g.in_edges(node):
             flip = random.random()
             if flip < float(1.0/indegree_dict[node]):
-                u = in_edge[0]
-                update_distance = dist_dict[node] + float(g.edge[u][node]['weight'])
+                u = in_edge[0]                
                 if not searched_dict[u]:
+                    update_distance = dist_dict[node] + float(g.edge[u][node]['weight'])
                     if dist_dict.has_key(u) and update_distance<dist_dict[u] or not dist_dict.has_key(u):
                         dist_dict[u] = update_distance
                         seed_deque.append(u)
