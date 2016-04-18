@@ -142,7 +142,7 @@ def GenerateRRSet(g):
         # dist_dict[node] = np.inf
     # To select a node @v uniformly
     n = len(g.nodes())
-    v = str(int(random.random()*n))
+    v = g.nodes()[int(random.random()*n)]
     # print v
     # To get the indegree @indegree_dict
     indegree_dict = g.in_degree()
@@ -189,7 +189,7 @@ def RES(G,k,r):
         # It is the sampling node's index
         # Set the distance to node i infinite
         dist_dict[i] = np.inf
-    print rr_sets
+    # print rr_sets
     # To find @S
     for i in xrange(k):
         eff = {}
@@ -322,8 +322,8 @@ if __name__ == '__main__':
     simpleG = LoadUnweightedGraph(file_name_simple)
     print simpleG.edges()
     n = simpleG.number_of_nodes()
-    r = int(n*math.log(n))
-    # r = 10000
+    # r = int(n*math.log(n))
+    r = 10000
     k = 1
     S = RES(simpleG,k,r)
     print S
