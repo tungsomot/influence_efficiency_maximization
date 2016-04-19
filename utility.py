@@ -156,7 +156,7 @@ def GenerateRRSet(g):
         for in_edge in g.in_edges(node):
             flip = random.random()
             if flip < float(1.0/indegree_dict[node]):
-                u = in_edge[0]                
+                u = in_edge[0]
                 if not searched_dict[u]:
                     update_distance = dist_dict[node] + float(g.edge[u][node]['weight'])
                     if dist_dict.has_key(u) and update_distance<dist_dict[u] or not dist_dict.has_key(u):
@@ -182,6 +182,7 @@ def RES(G,k,r):
     dist_dict = {}
     # To generate rr_sets
     rr_sets = []
+    start = time.clock()
     for i in xrange(r):
         rr_sets.append(GenerateRRSet(G))
         # Attention! Indices here is from 0 to len(rr_sets)-1
@@ -189,8 +190,11 @@ def RES(G,k,r):
         # It is the sampling node's index
         # Set the distance to node i infinite
         dist_dict[i] = np.inf
+    stop = time.clock()
+    print "%f" % float(stop-start)
     # print rr_sets
     # To find @S
+    start = time.clock()
     for i in xrange(k):
         eff = {}
         for j in xrange(r):
@@ -216,6 +220,10 @@ def RES(G,k,r):
         while j < r:
             if rr_sets[j].has_key(max_node):
                 dist_dict[j] = rr_sets[j][max_node]
+                # delete the max_node in every rr sets
+                rr_sets[j].pop(max_node)
+            # If the maxnode has min distance in the jth rr set,
+            # delete the jth rr set because it won't get marginal gain any more
             min_distance = dist_dict[j]
             min_distance_node = max_node
             for u in rr_sets[j].keys():
@@ -228,6 +236,8 @@ def RES(G,k,r):
                 rr_sets.remove(rr_sets[j])
                 r -= 1
             j += 1
+    stop = time.clock()
+    print "%f" % float(stop-start)
     return S
 
 def greedy(G,k,r):
@@ -324,6 +334,9 @@ if __name__ == '__main__':
     n = simpleG.number_of_nodes()
     # r = int(n*math.log(n))
     r = 10000
-    k = 1
+    k = 2
+    start = time.clock()
     S = RES(simpleG,k,r)
+    stop = time.clock()
+    print "%f" % float(stop-start)
     print S
