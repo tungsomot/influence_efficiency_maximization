@@ -20,6 +20,18 @@ def LoadUnweightedGraph(file_name):
         raise
     return DG
 
+def LoadUnweightedCitedGraph(file_name):
+    DG = nx.DiGraph()
+    try:
+        with open(file_name,'r') as graph_file:
+            for line in graph_file:
+                # An edge from @v to @u with weight @w
+                u,v = line.split()
+                DG.add_edge(v,u,weight=1)
+    except Exception as e:
+        raise
+    return DG
+
 # Load a weighted graph file @file_name.
 # return a directed graph @DG
 def LoadWeightedGraph(file_name):
