@@ -140,37 +140,30 @@ def GenerateSubgraphWIC(G):
 
 # To generate a RR set, which is used for Reverse Influence Sampling (RIS) method
 # This method uses WIC model.
-# @g is a subgraph of @G
+# @G is the original graph
 # return random node @v and corresponding distance dictory @dist_dict
 # Only record the node from which is reachable
-def GenerateRRSet(g):
+def GenerateRRSet(G,indegree_dict):
     # To represents whether node is searched
     searched_dict = {}
     # To record the distance of nodes to a certain node @v.
     dist_dict = {}
-    # To initialize all the nodes
-    for node in g.nodes():
-        searched_dict[node] = False
-        # dist_dict[node] = np.inf
     # To select a node @v uniformly
-    n = len(g.nodes())
-    v = g.nodes()[int(random.random()*n)]
-    # print v
-    # To get the indegree @indegree_dict
-    indegree_dict = g.in_degree()
-    # Seed set of @v which is used for RIS
+    n = len(G.nodes())
+    v = G.nodes()[int(random.random()*n)]
+    # Seed set of @v which is used for RES
     seed_deque = deque([v])
     dist_dict[v] = 1.0
-    # print g.in_edges(v)
+    # To do BFS to find a rr set
     while len(seed_deque)>0:
         node = seed_deque.popleft()
         searched_dict[node] = True
-        for in_edge in g.in_edges(node):
+        for in_edge in G.in_edges(node):
             flip = random.random()
             if flip < float(1.0/indegree_dict[node]):
                 u = in_edge[0]
-                if not searched_dict[u]:
-                    update_distance = dist_dict[node] + float(g.edge[u][node]['weight'])
+                if not searched_dict.has_key(u):
+                    update_distance = dist_dict[node] + float(G.edge[u][node]['weight'])
                     if dist_dict.has_key(u) and update_distance<dist_dict[u] or not dist_dict.has_key(u):
                         dist_dict[u] = update_distance
                         seed_deque.append(u)
@@ -194,19 +187,15 @@ def RES(G,k,r):
     dist_dict = {}
     # To generate rr_sets
     rr_sets = []
-    start = time.clock()
+    indegree_dict = G.in_degree()
     for i in xrange(r):
-        rr_sets.append(GenerateRRSet(G))
+        rr_sets.append(GenerateRRSet(G,indegree_dict))
         # Attention! Indices here is from 0 to len(rr_sets)-1
         # It is different from the node index (e.g. '267') in the graph G
         # It is the sampling node's index
         # Set the distance to node i infinite
         dist_dict[i] = np.inf
-    stop = time.clock()
-    print "%f" % float(stop-start)
-    # print rr_sets
     # To find @S
-    start = time.clock()
     for i in xrange(k):
         eff = {}
         for j in xrange(r):
@@ -248,8 +237,6 @@ def RES(G,k,r):
                 rr_sets.remove(rr_sets[j])
                 r -= 1
             j += 1
-    stop = time.clock()
-    print "%f" % float(stop-start)
     return S
 
 def greedy(G,k,r):
