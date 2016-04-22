@@ -141,16 +141,24 @@ def GenerateSubgraphWIC(G):
 # To generate a RR set, which is used for Reverse Influence Sampling (RIS) method
 # This method uses WIC model.
 # @G is the original graph
+# @V is the vertex set of @G
+# @n is the node size of graph @G
+# @indegree_dict is the indegree dictory
 # return random node @v and corresponding distance dictory @dist_dict
 # Only record the node from which is reachable
-def GenerateRRSet(G,indegree_dict):
+def GenerateRRSet(G,V,n,indegree_dict):
     # To represents whether node is searched
     searched_dict = {}
     # To record the distance of nodes to a certain node @v.
     dist_dict = {}
     # To select a node @v uniformly
-    n = len(G.nodes())
-    v = G.nodes()[int(random.random()*n)]
+    # start = time.clock()
+    # n = len(G.nodes())
+    index = int(random.random()*n)
+    v = V[index]
+    # stop = time.clock()
+    # print "select node randomly %f" % float(stop-start)
+    # start = time.clock()
     # Seed set of @v which is used for RES
     seed_deque = deque([v])
     dist_dict[v] = 1.0
@@ -167,6 +175,8 @@ def GenerateRRSet(G,indegree_dict):
                     if dist_dict.has_key(u) and update_distance<dist_dict[u] or not dist_dict.has_key(u):
                         dist_dict[u] = update_distance
                         seed_deque.append(u)
+    # stop = time.clock()
+    # print "get rr set for a node %f" % float(stop-start)
     return dist_dict
 
 # Reverse efficiency sampling (RES) algorithm:
@@ -188,8 +198,10 @@ def RES(G,k,r):
     # To generate rr_sets
     rr_sets = []
     indegree_dict = G.in_degree()
+    V = G.nodes()
+    n = len(V)
     for i in xrange(r):
-        rr_sets.append(GenerateRRSet(G,indegree_dict))
+        rr_sets.append(GenerateRRSet(G,V,n,indegree_dict))
         # Attention! Indices here is from 0 to len(rr_sets)-1
         # It is different from the node index (e.g. '267') in the graph G
         # It is the sampling node's index
