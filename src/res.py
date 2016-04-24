@@ -121,13 +121,13 @@ def res(g, k, r):
 
 if __name__ == '__main__':
     file_name = sys.argv[1]
-    g = utility.LoadUnweightedGraph(file_name)
+    g = utility.load_unweighted_graph(file_name)
     indegree_dict = g.in_degree()
     vertex_set = g.nodes()
     n = len(vertex_set)
     k = 2
-    r = int(n*math.log(n))
-    # r = 10000
+    # r = int(n*math.log(n))
+    r = 10000
     start = time.clock()
     s = res(g, k, r)
     stop = time.clock()
