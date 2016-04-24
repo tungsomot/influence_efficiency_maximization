@@ -126,7 +126,10 @@ if __name__ == '__main__':
     vertex_set = g.nodes()
     n = len(vertex_set)
     k = 2
-    # r = int(n*math.log(n))
-    r = 10000
+    r = int(n*math.log(n))
+    # r = 10000
+    start = time.clock()
     s = res(g, k, r)
+    stop = time.clock()
+    print "%f" % float(stop-start)
     print s
