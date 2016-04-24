@@ -77,7 +77,7 @@ def res(g, k, r):
         dist_dict[i] = np.inf
     # To find @s
     for i in xrange(k):
-        print r
+        # print r
         eff = {}
         for j in xrange(r):
             for u in rr_dicts[j].keys():
