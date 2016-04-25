@@ -35,10 +35,10 @@ def generate_rr_dict(g, vertex_set, n, indegree_dict):
     while len(s_deque) > 0:
         vertex = s_deque.popleft()
         searched_dict[vertex] = True
-        for in_edge in g.in_edges(vertex):
+        for u in g.predecessors(vertex):
             flip = random.random()
             if flip < 1.0/indegree_dict[vertex]:
-                u = in_edge[0]
+                # u = in_edge[0]
                 if not searched_dict.has_key(u):
                     distance = rr_dict[vertex] + g.edge[u][vertex]['weight']
                     if not rr_dict.has_key(u) or rr_dict.has_key(u) and distance < rr_dict[u]:
