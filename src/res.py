@@ -17,10 +17,10 @@ from collections import deque
 def generate_rr_dict(g, vertex_set, n, indegree_dict):
     """
     :type @g: networkx.DiGraph
-    :type @vertex_set: dictory {str : int}
+    :type @vertex_set: Dict{str : int}
     :type @n: int
-    :type @indegree_dict: {str : int}
-    :type @rr_dict: {str : float}
+    :type @indegree_dict: Dict{str : int}
+    :rtype @rr_dict: Dict{str : float}
     """
     # To record whether the vertex is searched
     searched_dict = {}
@@ -57,7 +57,7 @@ def res(g, k, r):
     :type @G: networkx.DiGraph
     :type @k: int
     :type @r: int
-    :type @s: [str]
+    :rtype @s: [str]
     """
     # Initialize seed set @S
     s = []
