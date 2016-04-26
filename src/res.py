@@ -81,11 +81,12 @@ def res(g, k, r):
         eff = {}
         for j in xrange(r):
             for u in rr_dicts[j].keys():
-                if rr_dicts[j][u] < dist_dict[j]:
-                    if eff.has_key(u):
-                        eff[u] += 1.0/rr_dicts[j][u] - 1.0/dist_dict[j]
-                    else:
-                        eff[u] = 1.0/rr_dicts[j][u] - 1.0/dist_dict[j]
+                if not u in s:
+                    if rr_dicts[j][u] < dist_dict[j]:
+                        if eff.has_key(u):
+                            eff[u] += 1.0/rr_dicts[j][u] - 1.0/dist_dict[j]
+                        else:
+                            eff[u] = 1.0/rr_dicts[j][u] - 1.0/dist_dict[j]
         # To calculate the max efficient node in ith iteration
         max_eff = 0
         max_node = '-1'
@@ -95,28 +96,28 @@ def res(g, k, r):
                 max_eff = eff[u]
         # Add max_node to @S
         s.append(max_node)
-        # Update @dist_dict and @rr_dicts
-        j = 0
-        while j < r:
-            if rr_dicts[j].has_key(max_node):
-                dist_dict[j] = rr_dicts[j][max_node]
-                rr_dicts[j].pop(max_node)
-            # If the maxnode has min distance in the jth RR dictory,
-            # delete the jth RR dictory, because it won't get marginal gain any more
-            min_distance = dist_dict[j]
-            min_distance_node = max_node
-            for u in rr_dicts[j].keys():
-                if rr_dicts[j][u] < min_distance:
-                    min_distance = rr_dicts[j][u]
-                    min_distance_node = u
-            # remove the rr_dict if max_node is already in @s
-            # this will reduce time-comsuming
-            if min_distance_node == max_node:
-                rr_dicts.remove(rr_dicts[j])
-                r -= 1
-            # else:
-                # rr_dicts[j].pop(max_node)
-            j += 1
+        # # Update @dist_dict and @rr_dicts
+        # j = 0
+        # while j < r:
+        #     if rr_dicts[j].has_key(max_node):
+        #         dist_dict[j] = rr_dicts[j][max_node]
+        #         rr_dicts[j].pop(max_node)
+        #     # If the maxnode has min distance in the jth RR dictory,
+        #     # delete the jth RR dictory, because it won't get marginal gain any more
+        #     min_distance = dist_dict[j]
+        #     min_distance_node = max_node
+        #     for u in rr_dicts[j].keys():
+        #         if rr_dicts[j][u] < min_distance:
+        #             min_distance = rr_dicts[j][u]
+        #             min_distance_node = u
+        #     # remove the rr_dict if max_node is already in @s
+        #     # this will reduce time-comsuming
+        #     if min_distance_node == max_node:
+        #         rr_dicts.remove(rr_dicts[j])
+        #         r -= 1
+        #     # else:
+        #         # rr_dicts[j].pop(max_node)
+        #     j += 1
     return s
 
 if __name__ == '__main__':
